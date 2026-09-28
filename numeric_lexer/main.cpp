@@ -6,8 +6,7 @@
 
 void tokenType (std::string code) {
 
-    //Check that the string is not empty
-    //Check that the string starts with a non-digit
+    //Check if the input is empty or starts with a non-digit character
     if (code.empty() || !std::isdigit(code[0])) {
         std::cout << "NEITHER" << std::endl;
         return;
@@ -17,16 +16,14 @@ void tokenType (std::string code) {
     bool hasDecimal = false;
     const std::unordered_set <char> OPERATORS = {'+', '-', '*', '/'};
 
-    //Scan for digits and decimal points
-    //If a decimal has already been found, prints error
-    //Otherwise the cursor continues on through the string
-    //While noting that there is a decimal so we can use float later
+    //Scan through digits and allow at most one decimal point;
+    //Stop scanning as soon as a non-digit/non-dot boundary is reached
     while (cursor < code.size()) {
         if (std::isdigit(code[cursor])){
             cursor++;
         } else if (code[cursor] == '.') {
             if (hasDecimal) {
-                std::cout << "ERROR" << std::endl;
+                std::cout << "ERROR" << std::endl; //Flag second decimal point as an error
                 return;
             }
             hasDecimal = true;
@@ -37,12 +34,13 @@ void tokenType (std::string code) {
         }
     }
     
-    //Checking if that character right after the digits is a valid boundary such as the end of the string, a space, or one of the 4 defined operators
+    //Checking if that character right after the digits is a valid boundary
+    //(end of string, whitespace, or one of the 4 valid operators)
     if (cursor == code.size() || std::isspace(code[cursor]) || OPERATORS.count(code[cursor]) > 0) {
         std::string type;
         std::string valueString = code.substr(0, cursor);
 
-        //Setting up for printing off results by defining float (from above) or int
+        //Determine token type based on whether a decimal point was encountered
         if (hasDecimal) {
             type = "FLOAT";
         } else {
@@ -61,7 +59,8 @@ void tokenType (std::string code) {
         std::cout << "(\"" << type << "\", " << valueString << ")" << std::endl;
         std::cout << "Remaining: \"" << remainder << "\"" << std::endl;
         return;
-    //Check if a letter comes immediatley after the number and prints error if so
+    
+    //Check if a letter comes immediatley after the number
     } else if (std::isalpha(code[cursor])) {
         std::cout << "ERROR" << std::endl;
         return;
